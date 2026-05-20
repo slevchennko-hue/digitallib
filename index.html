@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+<meta charset="UTF-8">
+<title>Digital Library</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#eef2f5;
+    margin:0;
+}
+
+header{
+    background:#1f3b4d;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+.box{
+    width:85%;
+    margin:20px auto;
+    background:white;
+    padding:20px;
+    border-radius:12px;
+}
+
+/* LOGIN */
+
+#loginBox{
+    max-width:350px;
+    margin:40px auto;
+}
+
+input, select, button{
+    width:100%;
+    padding:10px;
+    margin:6px 0;
+}
+
+button{
+    background:#1f3b4d;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+/* APP */
+
+#app{
+    display:none;
+}
+
+.card{
+    background:#f3f3f3;
+    padding:15px;
+    margin-top:10px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.card:hover{
+    background:#e3e3e3;
+}
+
+#docView{
+    display:none;
+}
+
+.back{
+    background:#444;
+}
+
+.badge{
+    display:inline-block;
+    padding:3px 8px;
+    background:#1f3b4d;
+    color:white;
+    border-radius:5px;
+    font-size:12px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+<h1>Електронна бібліотека Koha</h1>
+</header>
+
+<!-- LOGIN -->
+
+<div class="box" id="loginBox">
+
+<h2>Вхід до системи</h2>
+
+<input id="login" placeholder="Логін">
+<input id="password" type="password" placeholder="Пароль">
+
+<button onclick="enterSite()">
+Увійти
+</button>
+
+<p id="msg"></p>
+
+</div>
+
+<!-- APP -->
+
+<div class="box" id="app">
+
+<h2>Каталог документів</h2>
+
+<input id="search" placeholder="Пошук">
+
+<select id="category">
+<option value="">Всі розділи</option>
+<option>Історія</option>
+<option>Математика</option>
+<option>Фізика</option>
+<option>Архівна справа</option>
+</select>
+
+<button onclick="searchDocs()">
+Пошук
+</button>
+
+<div id="results"></div>
+
+<div id="docView"></div>
+
+</div>
+
+<script>
+
+//////////////////////
+// SIMPLE LOGIN
+//////////////////////
+
+function enterSite(){
+
+let login =
+document.getElementById("login").value;
+
+let password =
+document.getElementById("password").value;
+
+if(login==="" || password===""){
+
+document.getElementById("msg").innerText =
+"Заповніть всі поля";
+
+return;
+
+}
+
+document.getElementById("loginBox").style.display =
+"none";
+
+document.getElementById("app").style.display =
+"block";
+
+searchDocs();
+
+}
+
+//////////////////////
+// DOCUMENTS
+//////////////////////
+
+const docs = [
+
+{
+id:1,
+title:"Історія України",
+author:"Гісем",
+category:"Історія",
+year:2024,
+desc:"Підручник з історії України.",
+file:"https://pidruchnyk.com.ua/"
+},
+
+{
+id:2,
+title:"Вища математика",
+author:"Коваль",
+category:"Математика",
+year:2019,
+desc:"Основи математики.",
+file:"https://uk.wikipedia.org/wiki/Математика"
+},
+
+{
+id:3,
+title:"Фізика",
+author:"Кравець",
+category:"Фізика",
+year:2022,
+desc:"Основи фізики.",
+file:"https://uk.wikipedia.org/wiki/Фізика"
+}
+
+];
+
+//////////////////////
+// SEARCH
+//////////////////////
+
+function searchDocs(){
+
+let q =
+document.getElementById("search")
+.value.toLowerCase();
+
+let cat =
+document.getElementById("category")
+.value;
+
+let results =
+document.getElementById("results");
+
+results.innerHTML = "";
+
+let filtered = docs.filter(d => {
+
+return (
+
+(d.title.toLowerCase().includes(q)
+||
+d.author.toLowerCase().includes(q))
+
+&&
+
+(cat==="" || d.category===cat)
+
+);
+
+});
+
+if(filtered.length===0){
+
+results.innerHTML =
+"<p>Нічого не знайдено</p>";
+
+return;
+
+}
+
+filtered.forEach(d => {
+
+results.innerHTML += `
+
+<div class="card"
+onclick="openDoc(${d.id})">
+
+<h3>${d.title}</h3>
+
+<p>
+<span class="badge">
+${d.category}
+</span>
+
+| ${d.year}
+</p>
+
+<p>${d.author}</p>
+
+</div>
+
+`;
+
+});
+
+}
+
+//////////////////////
+// OPEN DOC
+//////////////////////
+
+function openDoc(id){
+
+let doc = docs.find(d => d.id===id);
+
+document.getElementById("results")
+.style.display="none";
+
+document.getElementById("docView")
+.style.display="block";
+
+document.getElementById("docView")
+.innerHTML = `
+
+<h2>${doc.title}</h2>
+
+<p><b>Автор:</b> ${doc.author}</p>
+
+<p><b>Розділ:</b> ${doc.category}</p>
+
+<p><b>Рік:</b> ${doc.year}</p>
+
+<hr>
+
+<p>${doc.desc}</p>
+
+<button onclick="window.open('${doc.file}')">
+📄 Відкрити документ
+</button>
+
+<br><br>
+
+<button class="back"
+onclick="backToCatalog()">
+
+← Назад
+
+</button>
+
+`;
+
+}
+
+function backToCatalog(){
+
+document.getElementById("results")
+.style.display="block";
+
+document.getElementById("docView")
+.style.display="none";
+
+}
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="uk">
+
+<head>
+<meta charset="UTF-8">
+<title>Digital Library</title>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:#eef2f5;
+    margin:0;
+}
+
+header{
+    background:#1f3b4d;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+.box{
+    width:85%;
+    margin:20px auto;
+    background:white;
+    padding:20px;
+    border-radius:12px;
+}
+
+/* LOGIN */
+
+#loginBox{
+    max-width:350px;
+    margin:40px auto;
+}
+
+input, select, button{
+    width:100%;
+    padding:10px;
+    margin:6px 0;
+}
+
+button{
+    background:#1f3b4d;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+/* APP */
+
+#app{
+    display:none;
+}
+
+.card{
+    background:#f3f3f3;
+    padding:15px;
+    margin-top:10px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.card:hover{
+    background:#e3e3e3;
+}
+
+#docView{
+    display:none;
+}
+
+.back{
+    background:#444;
+}
+
+.badge{
+    display:inline-block;
+    padding:3px 8px;
+    background:#1f3b4d;
+    color:white;
+    border-radius:5px;
+    font-size:12px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+<h1>Електронна бібліотека Koha</h1>
+</header>
+
+<!-- LOGIN -->
+
+<div class="box" id="loginBox">
+
+<h2>Вхід до системи</h2>
+
+<input id="login" placeholder="Логін">
+<input id="password" type="password" placeholder="Пароль">
+
+<button onclick="enterSite()">
+Увійти
+</button>
+
+<p id="msg"></p>
+
+</div>
+
+<!-- APP -->
+
+<div class="box" id="app">
+
+<h2>Каталог документів</h2>
+
+<input id="search" placeholder="Пошук">
+
+<select id="category">
+<option value="">Всі розділи</option>
+<option>Історія</option>
+<option>Математика</option>
+<option>Фізика</option>
+<option>Архівна справа</option>
+</select>
+
+<button onclick="searchDocs()">
+Пошук
+</button>
+
+<div id="results"></div>
+
+<div id="docView"></div>
+
+</div>
+
+<script>
+
+//////////////////////
+// SIMPLE LOGIN
+//////////////////////
+
+function enterSite(){
+
+let login =
+document.getElementById("login").value;
+
+let password =
+document.getElementById("password").value;
+
+if(login==="" || password===""){
+
+document.getElementById("msg").innerText =
+"Заповніть всі поля";
+
+return;
+
+}
+
+document.getElementById("loginBox").style.display =
+"none";
+
+document.getElementById("app").style.display =
+"block";
+
+searchDocs();
+
+}
+
+//////////////////////
+// DOCUMENTS
+//////////////////////
+
+const docs = [
+
+{
+id:1,
+title:"Історія України",
+author:"Гісем",
+category:"Історія",
+year:2024,
+desc:"Підручник з історії України.",
+file:"https://pidruchnyk.com.ua/"
+},
+
+{
+id:2,
+title:"Вища математика",
+author:"Коваль",
+category:"Математика",
+year:2019,
+desc:"Основи математики.",
+file:"https://uk.wikipedia.org/wiki/Математика"
+},
+
+{
+id:3,
+title:"Фізика",
+author:"Кравець",
+category:"Фізика",
+year:2022,
+desc:"Основи фізики.",
+file:"https://uk.wikipedia.org/wiki/Фізика"
+}
+
+];
+
+//////////////////////
+// SEARCH
+//////////////////////
+
+function searchDocs(){
+
+let q =
+document.getElementById("search")
+.value.toLowerCase();
+
+let cat =
+document.getElementById("category")
+.value;
+
+let results =
+document.getElementById("results");
+
+results.innerHTML = "";
+
+let filtered = docs.filter(d => {
+
+return (
+
+(d.title.toLowerCase().includes(q)
+||
+d.author.toLowerCase().includes(q))
+
+&&
+
+(cat==="" || d.category===cat)
+
+);
+
+});
+
+if(filtered.length===0){
+
+results.innerHTML =
+"<p>Нічого не знайдено</p>";
+
+return;
+
+}
+
+filtered.forEach(d => {
+
+results.innerHTML += `
+
+<div class="card"
+onclick="openDoc(${d.id})">
+
+<h3>${d.title}</h3>
+
+<p>
+<span class="badge">
+${d.category}
+</span>
+
+| ${d.year}
+</p>
+
+<p>${d.author}</p>
+
+</div>
+
+`;
+
+});
+
+}
+
+//////////////////////
+// OPEN DOC
+//////////////////////
+
+function openDoc(id){
+
+let doc = docs.find(d => d.id===id);
+
+document.getElementById("results")
+.style.display="none";
+
+document.getElementById("docView")
+.style.display="block";
+
+document.getElementById("docView")
+.innerHTML = `
+
+<h2>${doc.title}</h2>
+
+<p><b>Автор:</b> ${doc.author}</p>
+
+<p><b>Розділ:</b> ${doc.category}</p>
+
+<p><b>Рік:</b> ${doc.year}</p>
+
+<hr>
+
+<p>${doc.desc}</p>
+
+<button onclick="window.open('${doc.file}')">
+📄 Відкрити документ
+</button>
+
+<br><br>
+
+<button class="back"
+onclick="backToCatalog()">
+
+← Назад
+
+</button>
+
+`;
+
+}
+
+function backToCatalog(){
+
+document.getElementById("results")
+.style.display="block";
+
+document.getElementById("docView")
+.style.display="none";
+
+}
+
+</script>
+
+</body>
+</html>
